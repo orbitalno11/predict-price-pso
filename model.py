@@ -27,15 +27,15 @@ Y_test.reset_index(inplace=True, drop=True)
 
 def baseline_model():
     model = Sequential()
-    model.add(Dense(4, activation='relu', input_shape=(X.shape[1],)))
-    model.add(Dense(4, activation='relu'))
+    model.add(Dense(3, activation='relu', input_shape=(X.shape[1],)))
+    model.add(Dense(6, activation='relu'))
     model.add(Dense(1))
     model.compile(loss='mse', optimizer='adam', metrics=['mae'])
     return model
 
 
 estimator = KerasRegressor(build_fn=baseline_model, epochs=100, batch_size=5)
-estimator.fit(X_train, Y_train)
+history = estimator.fit(X_train, Y_train)
 y_pred = estimator.predict(X_test)
 mse = mean_squared_error(Y_test, y_pred)
 print(mse)
@@ -44,4 +44,11 @@ plt.plot(Y_test, label='y_test')
 plt.plot(y_pred, label='y_pred')
 plt.legend()
 plt.show()
+
+plt.plot(history.history['loss'])
+plt.yscale("log")
+# plt.plot(history.history['val_loss'])
+plt.legend(['train','test'],loc='upper left')
+plt.show()
+
 
