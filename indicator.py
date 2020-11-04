@@ -65,8 +65,7 @@ class Indicator:
         SMA=(self.__dataset.loc[:EMA_n_day-1,['Close']].sum().values[0])/EMA_n_day
         return SMA
 
-    def EMA(self) -> DataFrame:
-        EMA_n_day = 5
+    def EMA(self,EMA_n_day) -> DataFrame:
         self.__dataset['EMA'] = np.nan
         self.__dataset.loc[EMA_n_day-1,['EMA']] = self.__SMA(EMA_n_day)
 
