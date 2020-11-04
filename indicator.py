@@ -30,7 +30,7 @@ class Indicator:
             avg_loss = np.absolute(loss['change'].sum() / self.__rsi_n_day)
             return avg_loss
         else:
-            previous_avg_loss = dataframe.iloc[[-1]]['rsi_avg_loss'].values[0]
+             _avg_loss = dataframe.iloc[[-1]]['rsi_avg_loss'].values[0]
             _loss = dataframe.iloc[[-1]]['change'].values[0]
             loss = np.absolute(_loss) if _loss < 0 else 0
             avg_loss = ((previous_avg_loss * (self.__rsi_n_day - 1)) + loss) / self.__rsi_n_day
@@ -61,8 +61,22 @@ class Indicator:
         self.__dataset['rsi'] = 100 - (100 / (1 + self.__dataset['rs']))
         return self.__dataset
 
-    def EMA(self) -> str:
-        return "EMA"
+    def __SMA(self,EMA_n_day:int) -> float:
+        SMA=(self.__dataset.loc[:EMA_n_day-1,['Close']].sum().values[0])/EMA_n_day
+        return SMA
+
+    def EMA(self) -> DataFrame:
+        EMA_n_day = 5
+        self.__dataset['EMA'] = np.nan
+        self.__dataset.loc[EMA_n_day-1,['EMA']] = self.__SMA(EMA_n_day)
+
+        for index in self.__dataset.index: 
+            if index > (EMA_n_day-1):
+                previous_EMA = self.__dataset.iloc[[index-1]]['EMA'].values[0]
+                EMA = previous_EMA + (2/EMA_n_day+1)*(self.__dataset.iloc[[index]]['Close'].values[0]-previous_EMA)
+                self.__dataset.loc[index,['EMA']] = EMA
+
+        return self.__dataset
 
     def MACD(self) -> str:
         return "MACD"
