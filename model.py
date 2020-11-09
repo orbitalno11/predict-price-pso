@@ -74,15 +74,15 @@ class LSTMNN:
                        input_shape=(train_X.shape[1], train_X.shape[2])))
         model.add(Dropout(0.2))
         # Adding a second LSTM layer and some Dropout regularisation
-        model.add(LSTM(units=60, return_sequences=True, activation='sigmoid'))
+        model.add(LSTM(units=60, return_sequences=True))
         model.add(Dropout(0.2))
         # Adding a third LSTM layer and some Dropout regularisation
-        model.add(LSTM(units=60, return_sequences=True, activation='sigmoid'))
+        model.add(LSTM(units=60, return_sequences=True))
         model.add(Dropout(0.2))
         # Adding the output layer
         model.add(Dense(units=self.n_out))
         # Compiling the RNN
         model.compile(optimizer='adam', loss='mean_squared_error')
         # Fitting the RNN to the Training set
-        model.fit(train_X, train_y, epochs=self.epochs, batch_size=self.batch)
+        model.fit(train_X, train_y, epochs=self.epochs, batch_size=self.batch,validation_split=0.2)
         return model
