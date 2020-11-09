@@ -54,18 +54,19 @@ class LSTMNN:
         agg.drop(d_col, axis=1, inplace=True)
         return agg
 
-    def spilt_data_scale_tranformt(self, df: np.ndarray) -> tuple:
+    def spilt_data_scale_tranformt(self, df: pd.DataFrame) -> tuple:
         # Feature Scaling
+        df = df.to_numpy()
+        split = int(df.shape[0]*0.9)
+        train = df[:split, :]
+        test = df[split:, :]
         sc = MinMaxScaler(feature_range=(0, 1))
-        training_set_scaled = sc.fit_transform(df)
-        split = int(training_set_scaled.shape[0]*0.9)
-        train = training_set_scaled[:split, :]
-        test = training_set_scaled[split:, :]
-        train_X, train_y = train[:, :-self.n_out], train[:, -self.n_out:]
-        test_X, test_y = test[:, :-self.n_out], test[:, -self.n_out:]
+        training_set_scaled = sc.fit_transform(train)
+        train_X, train_y = training_set_scaled[:, :-self.n_out], training_set_scaled[:, -self.n_out:]
+        # test_X, test_y = test[:, :-self.n_out], test[:, -self.n_out:]
         train_X = train_X.reshape((train_X.shape[0], 1, train_X.shape[1]))
-        test_X = test_X.reshape((test_X.shape[0], 1, test_X.shape[1]))
-        return train_X, train_y, test_X, test_y
+        # test_X = test_X.reshape((test_X.shape[0], 1, test_X.shape[1]))
+        return train_X, train_y, test, sc
 
     def baseline_model(self, train_X, train_y):
         model = Sequential()
@@ -84,5 +85,5 @@ class LSTMNN:
         # Compiling the RNN
         model.compile(optimizer='adam', loss='mean_squared_error')
         # Fitting the RNN to the Training set
-        model.fit(train_X, train_y, epochs=self.epochs, batch_size=self.batch,validation_split=0.2)
-        return model
+        history = model.fit(train_X, train_y, epochs=self.epochs, batch_size=self.batch,validation_split=0.2)
+        return model, history

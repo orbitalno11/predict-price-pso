@@ -11,5 +11,5 @@ class Preperation:
             (self.df.Close - self.df.Close.shift(1))/self.df.Close.shift(1))*100
         mdf = self.df.drop(0, axis=0)
         mdf = mdf.reset_index(drop=True)
-        mdf = mdf.drop('Close', axis=1)
+        mdf = mdf.drop('Adj Close', axis=1)
         return mdf
