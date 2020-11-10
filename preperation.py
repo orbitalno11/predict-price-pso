@@ -13,3 +13,7 @@ class Preperation:
         mdf = mdf.reset_index(drop=True)
         mdf = mdf.drop('Adj Close', axis=1)
         return mdf
+
+    def getclose(self) -> float:
+        last_close = self.df[-1:]
+        return last_close['Close']
