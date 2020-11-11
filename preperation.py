@@ -1,5 +1,5 @@
 import pandas as pd
-
+import numpy as np
 
 class Preperation:
     def __init__(self, df: pd.DataFrame):
@@ -17,3 +17,14 @@ class Preperation:
     def getclose(self) -> float:
         last_close = self.df[-1:]
         return last_close['Close']
+    
+    def getcloseall(self, percent: np.ndarray, last_close: float):
+        percent = percent[0]
+        close = list()
+        for i, value in enumerate(percent):
+          print(value, i)
+          if i == 0:
+            close.append(((value/100) * last_close) + last_close)
+          else :
+            close.append(((value/100) * close[i-1]) + close[i-1])
+        return close
