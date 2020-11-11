@@ -68,8 +68,7 @@ close_columns = pd.concat(close_columns_frame)
 close_columns=close_columns.reset_index()
 close_columns.drop('index',axis=1,inplace=True)
 
-# use indicator  
 indicator = Indicator(close_columns)
-indicator.RSI()
-indicator.EMA()
-indicator.MACD()
+indicator_data = indicator.RSI()
+indicator_data = indicator.EMA()
+indicator_data = indicator.MACD()
