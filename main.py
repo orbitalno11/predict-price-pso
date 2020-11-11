@@ -47,7 +47,7 @@ last_col = reverse[:, -n_out:]
 # plt.legend()
 # plt.show()
 
-plot compare real and predict percentchage
+# plot compare real and predict percentchage
 plt.plot(test_y[0], label='real_change')
 plt.plot(last_col[0], label='predict_change')
 plt.legend()
