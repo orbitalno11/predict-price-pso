@@ -1,6 +1,7 @@
 from indicator import Indicator
 from preperation import Preperation
 from model import LSTMNN
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -40,7 +41,10 @@ reshapeTest = test_X.reshape((test_X.shape[0], test_X.shape[2]))
 reshapePredict = predict.reshape((predict.shape[0], predict.shape[2]))
 temp = np.concatenate((reshapeTest, reshapePredict), axis=1)
 reverse = sc.inverse_transform(temp)
-last_col = reverse[:, -n_out:]
+predict_change = reverse[:, -n_out:]
+
+# change percent change to close
+close_change = preperation_test.getcloseall(predict_change,last_close)
 
 # plt.plot(history.history['loss'], label='loss')
 # plt.plot(history.history['val_loss'], label='val_loss')
@@ -49,6 +53,23 @@ last_col = reverse[:, -n_out:]
 
 # plot compare real and predict percentchage
 plt.plot(test_y[0], label='real_change')
-plt.plot(last_col[0], label='predict_change')
+plt.plot(predict_change[0], label='predict_change')
 plt.legend()
 plt.show()
+
+
+# get Close 
+test_close_columns=test_data['Close']
+close_change_columns=close_change['Close']
+
+#create close price dataframe 
+close_columns_frame = [test_close_columns, close_change_columns]
+close_columns = pd.concat(close_columns_frame)
+close_columns=close_columns.reset_index()
+close_columns.drop('index',axis=1,inplace=True)
+
+# use indicator  
+indicator = Indicator(close_columns)
+indicator.RSI()
+indicator.EMA()
+indicator.MACD()
