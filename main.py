@@ -1,6 +1,6 @@
 from indicator import Indicator
 from preparation import Preparation
-from model import LSTMNN
+from model import RnnNN
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -14,10 +14,10 @@ preparation = Preparation(df=dataset)
 data = preparation.calculate_per_change()
 n_in = 30
 n_out = 10
-model = LSTMNN(epochs=10, batch=10, n_in=n_in, n_out=n_out)
+model = RnnNN(epochs=10, batch=10, n_in=n_in, n_out=n_out)
 dataset = model.preprocess_data(data, data.columns)
 # split and scale transform training data
-train_X, train_y, sc = model.spilt_data_scale_tranformt(dataset)
+train_X, train_y, sc = model.split_data_scale_tranformt(dataset)
 # train model LSTM
 modelLSTM, history = model.baseline_model(train_X, train_y)
 
