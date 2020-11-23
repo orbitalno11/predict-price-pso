@@ -71,14 +71,14 @@ class RnnNN:
 
     def baseline_model(self, train_X, train_y):
         model = Sequential()
-        # Adding the first LSTM layer and some Dropout regularisation
+        # Adding the first RNN layer and some Dropout regularisation
         model.add(SimpleRNN(self.n_in, return_sequences=True,
                             input_shape=(train_X.shape[1], train_X.shape[2])))
         # model.add(Dropout(0.2))
-        # Adding a second LSTM layer and some Dropout regularisation
+        # Adding a second RNN layer and some Dropout regularisation
         model.add(SimpleRNN(60, return_sequences=True))
         # model.add(Dropout(0.2))
-        # Adding a third LSTM layer and some Dropout regularisation
+        # Adding a third RNN layer and some Dropout regularisation
         model.add(SimpleRNN(60, return_sequences=True))
         # model.add(Dropout(0.2))
         # Adding the output layer
