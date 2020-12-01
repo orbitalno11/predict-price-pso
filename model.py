@@ -74,13 +74,13 @@ class RnnNN:
         # Adding the first RNN layer and some Dropout regularisation
         model.add(SimpleRNN(self.n_in, return_sequences=True,
                             input_shape=(train_X.shape[1], train_X.shape[2])))
-        # model.add(Dropout(0.2))
+        model.add(Dropout(0.2))
         # Adding a second RNN layer and some Dropout regularisation
         model.add(SimpleRNN(60, return_sequences=True))
-        # model.add(Dropout(0.2))
+        model.add(Dropout(0.2))
         # Adding a third RNN layer and some Dropout regularisation
         model.add(SimpleRNN(60, return_sequences=True))
-        # model.add(Dropout(0.2))
+        model.add(Dropout(0.2))
         # Adding the output layer
         model.add(Dense(units=self.n_out))
         # Compiling the RNN
@@ -90,24 +90,22 @@ class RnnNN:
                             batch_size=self.batch, validation_split=0.2)
         return model, history
 
-    # def pso_lstm_nn(self, train_X, train_y):
-    #     model = Sequential()
-    #     # Adding the first LSTM layer and some Dropout regularisation
-    #     model.add(LSTM(units=60, return_sequences=True,
-    #                    input_shape=(train_X.shape[1], train_X.shape[2])))
-    #     # model.add(Dropout(0.2))
-    #     # Adding a second LSTM layer and some Dropout regularisation
-    #     model.add(LSTM(units=60, return_sequences=True))
-    #     # model.add(Dropout(0.2))
+    def pso_neural_network(self, weights):
+        model = Sequential()
+        # Adding the first RNN layer and some Dropout regularisation
+        model.add(SimpleRNN(self.n_in, return_sequences=True,
+                            input_shape=(train_X.shape[1], train_X.shape[2])))
+        model.add(Dropout(0.2))
+        # Adding a second RNN layer and some Dropout regularisation
+        model.add(SimpleRNN(60, return_sequences=True))
+        model.add(Dropout(0.2))
+        # Adding a third RNN layer and some Dropout regularisation
+        model.add(SimpleRNN(60, return_sequences=True))
+        model.add(Dropout(0.2))
+        # Adding the output layer
+        model.add(Dense(units=self.n_out))
+        # Compiling the RNN
+        model.compile(optimizer='adam', loss='mean_squared_error')
+        model.set_weights(weights)
 
-    #     # Adding a third LSTM layer and some Dropout regularisation
-    #     model.add(LSTM(units=60, return_sequences=True))
-    #     # model.add(Dropout(0.2))
-    #     # Adding the output layer
-    #     model.add(Dense(units=self.n_out))
-    #     # Compiling the RNN
-    #     model.compile(optimizer='adam', loss='mean_squared_error')
-    #     # Fitting the RNN to the Training set
-    #     history = model.fit(train_X, train_y, epochs=self.epochs,
-    #                         batch_size=self.batch, validation_split=0.2)
-    #     return model, history
+        return model
