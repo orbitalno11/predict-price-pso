@@ -1,6 +1,6 @@
 from indicator import Indicator
 from preparation import Preparation
-from model import LSTMNN
+from model import RnnNN
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -14,12 +14,12 @@ preparation = Preparation(df=dataset)
 data = preparation.calculate_per_change()
 n_in = 30
 n_out = 10
-model = LSTMNN(epochs=1, batch=10, n_in=n_in, n_out=n_out)
+model = RnnNN(epochs=10, batch=10, n_in=n_in, n_out=n_out)
 dataset = model.preprocess_data(data, data.columns)
 # split and scale transform training data
-train_X, train_y, sc = model.spilt_data_scale_tranformt(dataset)
-# train model LSTM
-modelLSTM, history = model.baseline_model(train_X, train_y)
+train_X, train_y, sc = model.split_data_scale_tranformt(dataset)
+# train model RNN
+modelRNN, history = model.baseline_model(train_X, train_y)
 
 # import data test | stock apple
 test_data = pd.read_csv('data/AAPLv.2.csv')
@@ -34,7 +34,7 @@ test_transform = sc.transform(test_sample)
 test_X, test_y = test_transform[:, :-n_out], test_transform[:, -n_out:]
 test_X = test_X.reshape((test_X.shape[0], 1, test_X.shape[1]))
 # predict
-predict = modelLSTM.predict(test_X)
+predict = modelRNN.predict(test_X)
 
 # # inverse data
 reshapeTest = test_X.reshape((test_X.shape[0], test_X.shape[2]))

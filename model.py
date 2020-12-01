@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
-from keras.layers import LSTM
+from keras.layers import LSTM, SimpleRNN
 from keras.layers import Dropout
 from keras.layers import *
 from sklearn.preprocessing import MinMaxScaler
@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from keras.callbacks import EarlyStopping
 
 
-class LSTMNN:
+class RnnNN:
 
     def __init__(self, epochs: int, batch: int, n_in: int, n_out: int):
         self.epochs = epochs
@@ -54,7 +54,7 @@ class LSTMNN:
         agg.drop(d_col, axis=1, inplace=True)
         return agg
 
-    def spilt_data_scale_tranformt(self, df: pd.DataFrame) -> tuple:
+    def split_data_scale_tranformt(self, df: pd.DataFrame) -> tuple:
         # Feature Scaling
         df = df.to_numpy()
         # split = int(df.shape[0]*0.9)
@@ -71,16 +71,16 @@ class LSTMNN:
 
     def baseline_model(self, train_X, train_y):
         model = Sequential()
-        # Adding the first LSTM layer and some Dropout regularisation
-        model.add(LSTM(units=60, return_sequences=True,
-                       input_shape=(train_X.shape[1], train_X.shape[2])))
-        model.add(Dropout(0.2))
-        # Adding a second LSTM layer and some Dropout regularisation
-        model.add(LSTM(units=60, return_sequences=True))
-        model.add(Dropout(0.2))
-        # Adding a third LSTM layer and some Dropout regularisation
-        model.add(LSTM(units=60, return_sequences=True))
-        model.add(Dropout(0.2))
+        # Adding the first RNN layer and some Dropout regularisation
+        model.add(SimpleRNN(self.n_in, return_sequences=True,
+                            input_shape=(train_X.shape[1], train_X.shape[2])))
+        # model.add(Dropout(0.2))
+        # Adding a second RNN layer and some Dropout regularisation
+        model.add(SimpleRNN(60, return_sequences=True))
+        # model.add(Dropout(0.2))
+        # Adding a third RNN layer and some Dropout regularisation
+        model.add(SimpleRNN(60, return_sequences=True))
+        # model.add(Dropout(0.2))
         # Adding the output layer
         model.add(Dense(units=self.n_out))
         # Compiling the RNN
@@ -89,3 +89,25 @@ class LSTMNN:
         history = model.fit(train_X, train_y, epochs=self.epochs,
                             batch_size=self.batch, validation_split=0.2)
         return model, history
+
+    # def pso_lstm_nn(self, train_X, train_y):
+    #     model = Sequential()
+    #     # Adding the first LSTM layer and some Dropout regularisation
+    #     model.add(LSTM(units=60, return_sequences=True,
+    #                    input_shape=(train_X.shape[1], train_X.shape[2])))
+    #     # model.add(Dropout(0.2))
+    #     # Adding a second LSTM layer and some Dropout regularisation
+    #     model.add(LSTM(units=60, return_sequences=True))
+    #     # model.add(Dropout(0.2))
+
+    #     # Adding a third LSTM layer and some Dropout regularisation
+    #     model.add(LSTM(units=60, return_sequences=True))
+    #     # model.add(Dropout(0.2))
+    #     # Adding the output layer
+    #     model.add(Dense(units=self.n_out))
+    #     # Compiling the RNN
+    #     model.compile(optimizer='adam', loss='mean_squared_error')
+    #     # Fitting the RNN to the Training set
+    #     history = model.fit(train_X, train_y, epochs=self.epochs,
+    #                         batch_size=self.batch, validation_split=0.2)
+    #     return model, history
