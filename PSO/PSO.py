@@ -1,9 +1,10 @@
 import numpy as np
 import random
+from time import time
 
 
 class PSO:
-    def __init__(self, population: int, dimension: int, n_run: int, upper_bound: float, lower_bound: float ,lower_w : float , upper_w :float , c_0 : float,c_1 : float   ):
+    def __init__(self, population: int, dimension: int, n_run: int, upper_bound: float, lower_bound: float, lower_w: float, upper_w: float, c_0: float, c_1: float):
         self.population = population
         self.dimension = dimension
         self.swarm = Swarm(self.dimension, self.population)
@@ -16,25 +17,45 @@ class PSO:
         self.lower_w = lower_w
         self.c_0 = c_0
         self.c_1 = c_1
-        self.rng = random.seed()
+        random.seed(int(time() * 1000))
+        self.nfc = None
+        self.maxnfc = 100000
 
-
+    def evolution(self):
+        iw = np.random.uniform(self.lower_w, self.upper_w, 1)[0]
+        w = self.lower_w
+        self.initialization()
 
     def initialization(self):
-        for index,particle in enumerate(self.swarm.population) :
-            for dim in range(self.dimension):
-                particle.x[dim] = self.lower_bound + (self.upper_bound - self.lower_bound)*self.rng
-                particle.v[dim] = self.rng
+        self.nfc = 0
 
-            particle.setFitness(0)
+        for index, particle in enumerate(self.swarm.population):
+            for dim in range(self.dimension):
+                particle.x[dim] = self.lower_bound + \
+                    (self.upper_bound - self.lower_bound) * random.random()
+                particle.v[dim] = random.random()
+
+            particle.setFitness(-(random.random()))
             particle.p_best = particle.x.copy()
             particle.p_best_value = particle.finess
 
-            if particle.finess < self.swarm.g_best_value :
+            if particle.finess < self.swarm.g_best_value:
                 self.swarm.g_best = index
                 self.swarm.g_best_value = particle.finess
 
+    def evaluateSwarm(self):
+        for index, particle in enumerate(self.swarm.population):
+            particle.setFitness(-(random.random()))
+            self.nfc = self.nfc+1
 
+        for index, particle in enumerate(self.swarm.population):
+            if particle.finess < particle.p_best_value:
+                particle.p_best = particle.x.copy()
+                particle.p_best_value = particle.finess
+
+                if particle.finess < self.swarm.g_best_value:
+                    self.swarm.g_best = index
+                    self.swarm.g_best_value = particle.finess
 
 
 class Swarm:
@@ -49,13 +70,14 @@ class Particle:
     p_best_value: float
 
     def __init__(self, dimension: int):
-        self.x = []
-        self.v = []
-        self.p_best = []
+        self.x = [None] * dimension
+        self.v = [None] * dimension
+        self.p_best = [None] * dimension
 
     def setFitness(self, fit: float):
         self.finess = fit
 
 
-pso = PSO(5, 2, 1 , 1 , -1 , 0.9 , 0.4 , 0.5 , 0.5)
-pso.initialization()
+pso = PSO(5, 2, 1, 1, -1, 0.9, 0.4, 0.5, 0.5)
+pso.evolution()
+pso.evaluateSwarm()
