@@ -14,7 +14,7 @@ preparation = Preparation(df=dataset)
 data = preparation.calculate_per_change()
 n_in = 30
 n_out = 10
-model = LSTMNN(epochs=10, batch=10, n_in=n_in, n_out=n_out)
+model = LSTMNN(epochs=1, batch=10, n_in=n_in, n_out=n_out)
 dataset = model.preprocess_data(data, data.columns)
 # split and scale transform training data
 train_X, train_y, sc = model.spilt_data_scale_tranformt(dataset)
