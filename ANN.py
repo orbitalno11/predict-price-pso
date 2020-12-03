@@ -63,13 +63,12 @@ class ANN:
         sc = MinMaxScaler(feature_range=(0, 1))
         training_set_scaled = sc.fit_transform(df)
         train_X, train_y = training_set_scaled[:, :-self.n_out], training_set_scaled[:, -self.n_out:]
-        # train_X, train_y = df[:, :-self.n_out], df[:, -self.n_out:]
         return train_X, train_y, sc
 
     def initial_baseline(self):
         self.base_line_model = Sequential()
         self.base_line_model.add(Dense(self.n_in, input_dim=self.dim, activation='relu'))
-        self.base_line_model.add(Dense(self.n_in*2, activation='relu'))
+        self.base_line_model.add(Dense(self.n_in * 2, activation='relu'))
         self.base_line_model.add(Dense(self.n_out, activation='sigmoid'))
         self.base_line_model.compile(optimizer='adam', loss='mean_squared_error')
 
@@ -83,22 +82,22 @@ class ANN:
         return self.base_line_model
 
     def initial_model_pso(self, w: list):
-        temp = self.dim*self.n_in
+        temp = self.dim * self.n_in
         w1 = w[0:temp].reshape((self.dim, self.n_in))
-        b1 = w[temp:temp+self.n_in].reshape((self.n_in,))
+        b1 = w[temp:temp + self.n_in].reshape((self.n_in,))
         temp = temp + self.n_in
-        w2 = w[temp:temp+(self.n_in*self.n_in*2)].reshape((self.n_in, self.n_in*2))
-        temp = temp +(self.n_in*self.n_in*2)
-        b2 = w[temp:temp + (self.n_in*2)].reshape((self.n_in*2,))
-        temp = temp + (self.n_in*2)
-        w3 = w[temp:temp +(self.n_in*2*self.n_out)].reshape((self.n_in*2, self.n_out))
-        temp = temp +(self.n_in*2*self.n_out)
-        b3 = w[temp:temp+self.n_out].reshape((self.n_out,))
+        w2 = w[temp:temp + (self.n_in * self.n_in * 2)].reshape((self.n_in, self.n_in * 2))
+        temp = temp + (self.n_in * self.n_in * 2)
+        b2 = w[temp:temp + (self.n_in * 2)].reshape((self.n_in * 2,))
+        temp = temp + (self.n_in * 2)
+        w3 = w[temp:temp + (self.n_in * 2 * self.n_out)].reshape((self.n_in * 2, self.n_out))
+        temp = temp + (self.n_in * 2 * self.n_out)
+        b3 = w[temp:temp + self.n_out].reshape((self.n_out,))
         weight = [w1, b1, w2, b2, w3, b3]
 
         self.pso_model = Sequential()
         self.pso_model.add(Dense(self.n_in, input_dim=self.dim, activation='relu'))
-        self.pso_model.add(Dense(self.n_in*2, activation='relu'))
+        self.pso_model.add(Dense(self.n_in * 2, activation='relu'))
         self.pso_model.add(Dense(self.n_out, activation='sigmoid'))
         self.pso_model.set_weights(weight)
         self.pso_model.compile(optimizer='adam', loss='mean_squared_error')

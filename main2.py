@@ -17,6 +17,9 @@ DIM = N_IN * 6  # dimension for baseline model
 
 PARTICLE = 100  # number of PSO particle
 ITERATION = 10  # number of PSO iteration
+C1 = 1
+C2 = 2
+W = 0.01
 
 # setup baseline model
 ann = ANN(epochs=10, batch=10, n_in=N_IN, n_out=N_OUT)
@@ -48,10 +51,8 @@ ann.set_test(test_X[0].reshape(1, DIM), test_y[0])
 predict = annModel.predict(test_X[0].reshape(1, DIM))
 weight = annModel.get_weights()
 
-print(predict)
-
 # initialize swarm
-options = {'c1': 1, 'c2': 1, 'w': 0.01}
+options = {'c1': C1, 'c2': C2, 'w': W}
 dimensions = annModel.count_params()
 max_bound = 0.5 * np.ones(dimensions)
 min_bound = - max_bound
@@ -73,6 +74,7 @@ cost, pos = optimizer.optimize(objective_function, iters=ITERATION, verbose=1)
 
 # predict value from baseline model with PSO optimize
 pso_model = ann.model_pso(pos)
+history_pso = pso_model.history
 pso_predict = pso_model.predict(test_X[0].reshape(1, DIM))
 
 # reversed value to original value
@@ -120,52 +122,61 @@ indicator_test_data = indicator_test.RSI()
 indicator_test_data = indicator_test.EMA()
 indicator_test_data = indicator_test.MACD()
 
+# show loss
+# plt.plot(history.history['loss'], label='ann_loss')
+# plt.plot(pso_model.history['loss'], label='pso_loss')
+# plt.title('Mean Square Error')
+# plt.ylabel('error')
+# plt.xlabel('epoch')
+# plt.legend(loc='upper left')
+# plt.show()
+
 # show close value
-plt.plot(indicator_data_ann_predict['Close'])
-plt.plot(indicator_data_pso_predict['Close'])
-plt.plot(indicator_test_data['Close'])
+plt.plot(indicator_data_ann_predict['Close'], label='ANN')
+plt.plot(indicator_data_pso_predict['Close'], label='PSO')
+plt.plot(indicator_test_data['Close'], label='REAL VALUE')
 plt.title('Close')
 plt.ylabel('Close')
 plt.xlabel('number of date')
-plt.legend(['ANN', 'PSO', 'real value'], loc='upper left')
+plt.legend(loc='upper left')
 plt.show()
 
 # show RSI 14
-plt.plot(indicator_data_ann_predict['rsi'])
-plt.plot(indicator_data_pso_predict['rsi'])
-plt.plot(indicator_test_data['rsi'])
+plt.plot(indicator_data_ann_predict['rsi'], label='ANN')
+plt.plot(indicator_data_pso_predict['rsi'], label='PSO')
+plt.plot(indicator_test_data['rsi'], label='REAL VALUE')
 plt.title('RSI')
 plt.ylabel('RSI')
 plt.xlabel('number of date')
-plt.legend(['ANN', 'PSO', 'real value'], loc='upper left')
+plt.legend(loc='upper left')
 plt.show()
 
 # show EMA 5 day
-plt.plot(indicator_data_ann_predict['ema_5_day'])
-plt.plot(indicator_data_pso_predict['ema_5_day'])
-plt.plot(indicator_test_data['ema_5_day'])
+plt.plot(indicator_data_ann_predict['ema_5_day'], label='ANN')
+plt.plot(indicator_data_pso_predict['ema_5_day'], label='PSO')
+plt.plot(indicator_test_data['ema_5_day'], label='REAL VALUE')
 plt.title('EMA 5 day')
 plt.ylabel('EMA')
 plt.xlabel('number of date')
-plt.legend(['ANN', 'PSO'], loc='upper left')
+plt.legend(loc='upper left')
 plt.show()
 
 # show EMA 12 day
-plt.plot(indicator_data_ann_predict['ema_12_day'])
-plt.plot(indicator_data_pso_predict['ema_12_day'])
-plt.plot(indicator_test_data['ema_12_day'])
+plt.plot(indicator_data_ann_predict['ema_12_day'], label='ANN')
+plt.plot(indicator_data_pso_predict['ema_12_day'], label='PSO')
+plt.plot(indicator_test_data['ema_12_day'], label='REAL VALUE')
 plt.title('EMA 12 day')
 plt.ylabel('EMA')
 plt.xlabel('number of date')
-plt.legend(['ANN', 'PSO', 'real value'], loc='upper left')
+plt.legend(loc='upper left')
 plt.show()
 
 # show MACD
-plt.plot(indicator_data_ann_predict['MACD'])
-plt.plot(indicator_data_pso_predict['MACD'])
-plt.plot(indicator_test_data['MACD'])
+plt.plot(indicator_data_ann_predict['MACD'], label='ANN')
+plt.plot(indicator_data_pso_predict['MACD'], label='PSO')
+plt.plot(indicator_test_data['MACD'], label='REAL VALUE')
 plt.title('MACD')
 plt.ylabel('MACD')
 plt.xlabel('number of date')
-plt.legend(['ANN', 'PSO', 'real value'], loc='upper left')
+plt.legend(loc='upper left')
 plt.show()
