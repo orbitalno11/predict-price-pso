@@ -12,12 +12,11 @@ from preparation import Preparation
 
 class Simulator:
 
-    def __init__(self, simulate_day: int, simulate_data: DataFrame, baseline_model, pso_model,
+    def __init__(self, simulate_day: int, simulate_data: DataFrame, baseline_model, pso_model=None,
                  initial_fund: int = 1000000, trading_constant=0.5,
                  volume_constant=100, trading_fee=0.17):
         self.simulate_day = simulate_day
         self.simulate_data = simulate_data
-        self.__prepare_data(simulate_data)
         self.TRADING_CONSTANT = trading_constant
         self.VOLUME_CONSTANT = volume_constant
         self.TRADING_FEE = trading_fee / 100
@@ -25,6 +24,7 @@ class Simulator:
         self.baseline_model = baseline_model
         self.pso_model = pso_model
         # initial fund
+        self.first_day_fund = initial_fund
         self.fund = initial_fund
         self.pso_fund = initial_fund
         # initial stock
@@ -45,27 +45,50 @@ class Simulator:
         # initial close history
         self.close_history = [np.nan]
 
-    def __prepare_data(self, dataframe: DataFrame):
-        preparation = Preparation(dataframe)
+    def __prepare_data(self):
+        preparation = Preparation(self.simulate_data)
         preparation_data = preparation.calculate_per_change()
-        self.prepare_data = preparation_data
+        sc = MinMaxScaler(feature_range=(0, 1))
+        scale_data = sc.fit_transform(preparation_data)
+        scale_data = scale_data[:, :5]
+        return scale_data, sc
+
+    def __predict_data(self):
+        # Open,High,Low,Close,Volume
+        preparation_data, sc = self.__prepare_data()
+        baseline_predict = self.baseline_model.predict(preparation_data)
+        temp = np.concatenate((preparation_data, baseline_predict), axis=1)
+        reverse_data = sc.inverse_transform(temp)
+        df = DataFrame(reverse_data, columns=[
+                       'Open', 'High', 'Low', 'Close', 'Volume', 'baseline_predict'])
+        self.baseline_predict_data = df.copy()
+
+    def __pso_predict_data(self):
+        preparation_data, sc = self.__prepare_data()
+        pso_predict = self.pso_model.predict(preparation_data)
+        temp = np.concatenate((preparation_data, pso_predict), axis=1)
+        reverse_data = sc.inverse_transform(temp)
+        df = DataFrame(reverse_data, columns=[
+                       'Open', 'High', 'Low', 'Close', 'Volume', 'pso_predict_data'])
+        self.pso_predict_data = df.copy()
 
     def __trading(self, day: int):
-        current_close = self.simulate_data.loc[day:day, ['Close']].values[0][0]
-        data_for_predict = self.simulate_data.loc[day:day, ['Open', 'High', 'Low', 'Close', 'Volume']]
-        print(data_for_predict)
-        baseline_predict = randn(1)[0]
-        pso_optimize_predict = randn(1)[0]
-
-        self.close_history.append(current_close)
-        self.baseline_predict_history.append(baseline_predict)
-        self.pso_optimize_predict_history.append(pso_optimize_predict)
+        current_close = self.baseline_predict_data.loc[day:day, [
+            'Close']].values[0][0]
 
         # baseline decision
+        baseline_predict = self.baseline_predict_data.loc[day:day, [
+            'baseline_predict']].values[0][0]
+        self.close_history.append(current_close)
+        self.baseline_predict_history.append(baseline_predict)
+
         self.__baseline_decision(baseline_predict, current_close)
 
         # pso decision
+        pso_optimize_predict = self.pso_predict_data.loc[day:day, [
+            'pso_predict_data']].values[0][0] if self.pso_model is not None else 0
         self.__pso_decision(pso_optimize_predict, current_close)
+        self.pso_optimize_predict_history.append(pso_optimize_predict)
 
     def __buy(self, close, fund, stock):
         available_fund = fund / 3
@@ -110,10 +133,12 @@ class Simulator:
 
     def __baseline_decision(self, predict, close):
         if predict > self.TRADING_CONSTANT:
-            fund, stock, action = self.__buy(close=close, fund=self.fund, stock=self.stock)
+            fund, stock, action = self.__buy(
+                close=close, fund=self.fund, stock=self.stock)
             self.__set_baseline_data(fund=fund, stock=stock, action=action)
         elif predict < -self.TRADING_CONSTANT:
-            fund, stock, action = self.__sell(close=close, fund=self.fund, stock=self.stock)
+            fund, stock, action = self.__sell(
+                close=close, fund=self.fund, stock=self.stock)
             self.__set_baseline_data(fund=fund, stock=stock, action=action)
         else:
             fund, stock, action = self.__hold(fund=self.fund, stock=self.stock)
@@ -121,24 +146,35 @@ class Simulator:
 
     def __pso_decision(self, predict, close):
         if predict > self.TRADING_CONSTANT:
-            fund, stock, action = self.__buy(close=close, fund=self.pso_fund, stock=self.pso_stock)
+            fund, stock, action = self.__buy(
+                close=close, fund=self.pso_fund, stock=self.pso_stock)
             self.__set_pso_data(fund=fund, stock=stock, action=action)
         elif predict < -self.TRADING_CONSTANT:
-            fund, stock, action = self.__sell(close=close, fund=self.pso_fund, stock=self.pso_stock)
+            fund, stock, action = self.__sell(
+                close=close, fund=self.pso_fund, stock=self.pso_stock)
             self.__set_pso_data(fund=fund, stock=stock, action=action)
         else:
-            fund, stock, action = self.__hold(fund=self.pso_fund, stock=self.pso_stock)
+            fund, stock, action = self.__hold(
+                fund=self.pso_fund, stock=self.pso_stock)
             self.__set_pso_data(fund=fund, stock=stock, action=action)
 
     def start(self):
+        self.__predict_data()
+        if self.pso_model is not None:
+            self.__pso_predict_data()
         for day in range(self.simulate_day):
             self.__trading(day)
         return 'start'
 
     def summary(self):
-        return DataFrame(list(
+        df = DataFrame(list(
             zip(self.baseline_predict_history, self.pso_optimize_predict_history, self.close_history, self.fund_history,
                 self.pso_fund_history, self.stock_history, self.pso_stock_history, self.action_history,
                 self.pso_action_history)),
-            columns=['baseline_predict', 'pso_optimize_predict', 'close', 'fund', 'pso_fund', 'stock', 'pso_stock',
+            columns=['baseline_predict', 'pso_predict', 'close', 'fund', 'pso_fund', 'stock', 'pso_stock',
                      'action', 'pso_action'])
+        df['baseline_value_change'] = (
+            (df.fund - self.first_day_fund)/self.first_day_fund) * 100
+        df['pso_value_change'] = (
+            (df.pso_fund - self.first_day_fund)/self.first_day_fund) * 100
+        return df
