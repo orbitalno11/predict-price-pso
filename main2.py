@@ -9,7 +9,8 @@ from ANN import ANN
 
 # initial value
 TRAIN_PATH = 'data/test_set/C-18.csv'
-# TEST_PATH = 'data/AAPL-30.csv'
+PATH_ANN_MODEL = 'model/model-baseline/model-c'
+PATH_PSO_MODEL = 'model/model-pso/model-pso-c'
 
 N_IN = 5  # number of date for training
 N_OUT = 1  # number of date for predict
@@ -35,7 +36,7 @@ ann.set_train(train_X, train_y)
 # # training baseline model
 history = ann.baseline_train()
 annModel = ann.get_baseline_model()
-
+annModel.save(PATH_ANN_MODEL)
 # # summarize history for loss
 # plt.plot(history.history['loss'])
 # plt.plot(history.history['val_loss'])
@@ -86,10 +87,10 @@ optimizer = ps.single.GlobalBestPSO(
 # optimize PSO
 cost, pos = optimizer.optimize(objective_function, iters=ITERATION, verbose=1)
 
-# # predict value from baseline model with PSO optimize
-# pso_model = ann.model_pso(pos)
+# predict value from baseline model with PSO optimize
+pso_model = ann.model_pso(pos)
 # pso_predict = pso_model.predict(test_X)
-
+pso_model.save(PATH_PSO_MODEL)
 # # reversed value to original value
 # pso_temps = np.concatenate((test_X[0].reshape(1, DIM), pso_predict), axis=1)
 # pso_reversed = sc.inverse_transform(pso_temps)
