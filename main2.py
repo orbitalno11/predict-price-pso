@@ -3,13 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pyswarms as ps
 
-from indicator import Indicator
+# from indicator import Indicator
 from preparation import Preparation
 from ANN import ANN
 
 # initial value
-TRAIN_PATH = 'data/AAPL-2014-2018.csv'
-TEST_PATH = 'data/AAPL-30.csv'
+TRAIN_PATH = 'data/test_set/C-18.csv'
+# TEST_PATH = 'data/AAPL-30.csv'
 
 N_IN = 5  # number of date for training
 N_OUT = 1  # number of date for predict
@@ -22,7 +22,7 @@ C2 = 2
 W = 0.1
 
 # setup baseline model
-ann = ANN(epochs=200, batch=4, n_in=N_IN, n_out=N_OUT)
+ann = ANN(epochs=200, batch=3, n_in=N_IN, n_out=N_OUT)
 
 # prepare train data
 read_data = pd.read_csv(TRAIN_PATH)
@@ -45,23 +45,23 @@ annModel = ann.get_baseline_model()
 # plt.legend(['train', 'test'], loc='upper left')
 # plt.show()
 
-# prepare test data
-test_data = pd.read_csv(TEST_PATH)
-preparation_test = Preparation(df=test_data)
-# last_close = preparation_test.get_close()
-data_test = preparation_test.calculate_per_change()
+# # prepare test data
+# test_data = pd.read_csv(TEST_PATH)
+# preparation_test = Preparation(df=test_data)
+# # last_close = preparation_test.get_close()
+# data_test = preparation_test.calculate_per_change()
 
-# test_sample = ann.pre_process_data(data_test, data_test.columns)
-test_transform = sc.transform(data_test)
-test_X, test_y = test_transform[:, :-N_OUT], test_transform[:, -N_OUT:]
-# ann.set_test(test_X[0].reshape(1, DIM), test_y[0])
+# # test_sample = ann.pre_process_data(data_test, data_test.columns)
+# test_transform = sc.transform(data_test)
+# test_X, test_y = test_transform[:, :-N_OUT], test_transform[:, -N_OUT:]
+# # ann.set_test(test_X[0].reshape(1, DIM), test_y[0])
 
 # # predict value from baseline model
-predict = annModel.predict(test_X)
-# weight = annModel.get_weights()
-# for w in weight:
-#     print(w.shape)
-#     print('-------------------------------')
+# predict = annModel.predict(test_X)
+weight = annModel.get_weights()
+for w in weight:
+    print(np.amax(w), np.amin(w))
+    print('-------------------------------')
 
 # initialize swarm
 options = {'c1': C1, 'c2': C2, 'w': W}
@@ -71,6 +71,8 @@ min_bound = -2 * np.ones(dimensions)
 bounds = (min_bound, max_bound)
 
 # define objective function for PSO
+
+
 def objective_function(x):
     n_particles = x.shape[0]
     j = [ann.evaluate_model_pso(x[i]) for i in range(n_particles)]
@@ -78,14 +80,15 @@ def objective_function(x):
 
 
 # call instance of PSO
-optimizer = ps.single.GlobalBestPSO(n_particles=PARTICLE, dimensions=dimensions, options=options, bounds=bounds)
+optimizer = ps.single.GlobalBestPSO(
+    n_particles=PARTICLE, dimensions=dimensions, options=options)
 
 # optimize PSO
 cost, pos = optimizer.optimize(objective_function, iters=ITERATION, verbose=1)
 
-# predict value from baseline model with PSO optimize
-pso_model = ann.model_pso(pos)
-pso_predict = pso_model.predict(test_X)
+# # predict value from baseline model with PSO optimize
+# pso_model = ann.model_pso(pos)
+# pso_predict = pso_model.predict(test_X)
 
 # # reversed value to original value
 # pso_temps = np.concatenate((test_X[0].reshape(1, DIM), pso_predict), axis=1)
@@ -141,15 +144,15 @@ pso_predict = pso_model.predict(test_X)
 # plt.legend(loc='upper left')
 # plt.show()
 
-# show close value
-plt.plot(predict, label='ANN')
-plt.plot(pso_predict, label='PSO')
-plt.plot(test_y, label='REAL VALUE')
-plt.title('Close')
-plt.ylabel('Close')
-plt.xlabel('number of date')
-plt.legend(loc='upper left')
-plt.show()
+# # show close value
+# plt.plot(predict, label='ANN')
+# plt.plot(pso_predict, label='PSO')
+# plt.plot(test_y, label='REAL VALUE')
+# plt.title('Close')
+# plt.ylabel('Close')
+# plt.xlabel('number of date')
+# plt.legend(loc='upper left')
+# plt.show()
 
 # # show RSI 14
 # plt.plot(indicator_data_ann_predict['rsi'], label='ANN')
