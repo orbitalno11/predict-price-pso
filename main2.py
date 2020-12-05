@@ -11,71 +11,81 @@ from ANN import ANN
 TRAIN_PATH = 'data/AAPL-2014-2018.csv'
 TEST_PATH = 'data/AAPL-30.csv'
 
-N_IN = 6  # number of date for training
+N_IN = 5  # number of date for training
 N_OUT = 1  # number of date for predict
 DIM = N_IN * 6  # dimension for baseline model
 
-# PARTICLE = 100  # number of PSO particle
-# ITERATION = 10  # number of PSO iteration
-# C1 = 1
-# C2 = 2
-# W = 0.01
+PARTICLE = 200  # number of PSO particle
+ITERATION = 10  # number of PSO iteration
+C1 = 2
+C2 = 2
+W = 0.1
 
 # setup baseline model
-ann = ANN(epochs=10, batch=10, n_in=N_IN, n_out=N_OUT)
+ann = ANN(epochs=200, batch=4, n_in=N_IN, n_out=N_OUT)
 
 # prepare train data
 read_data = pd.read_csv(TRAIN_PATH)
 preparation = Preparation(df=read_data)
 data = preparation.calculate_per_change()
 # dataset = ann.pre_process_data(data, data.columns)
-train_X, train_y, sc, dx ,dy = ann.split_data_scale_transform(data)
-# ann.set_train(train_X, train_y)
+train_X, train_y, sc = ann.split_data_scale_transform(data)
+ann.set_train(train_X, train_y)
 
 # # training baseline model
-# history = ann.baseline_train()    
-# annModel = ann.get_baseline_model()
+history = ann.baseline_train()
+annModel = ann.get_baseline_model()
 
-# # prepare test data
-# test_data = pd.read_csv(TEST_PATH)
-# preparation_test = Preparation(df=test_data)
+# # summarize history for loss
+# plt.plot(history.history['loss'])
+# plt.plot(history.history['val_loss'])
+# plt.title('model loss')
+# plt.ylabel('loss')
+# plt.xlabel('epoch')
+# plt.legend(['train', 'test'], loc='upper left')
+# plt.show()
+
+# prepare test data
+test_data = pd.read_csv(TEST_PATH)
+preparation_test = Preparation(df=test_data)
 # last_close = preparation_test.get_close()
-# data_test = preparation_test.calculate_per_change()
+data_test = preparation_test.calculate_per_change()
 
 # test_sample = ann.pre_process_data(data_test, data_test.columns)
-# test_transform = sc.transform(test_sample)
-# test_X, test_y = test_transform[:, :-N_OUT], test_transform[:, -N_OUT:]
+test_transform = sc.transform(data_test)
+test_X, test_y = test_transform[:, :-N_OUT], test_transform[:, -N_OUT:]
 # ann.set_test(test_X[0].reshape(1, DIM), test_y[0])
 
 # # predict value from baseline model
-# predict = annModel.predict(test_X[0].reshape(1, DIM))
+predict = annModel.predict(test_X)
 # weight = annModel.get_weights()
+# for w in weight:
+#     print(w.shape)
+#     print('-------------------------------')
 
-# # initialize swarm
-# options = {'c1': C1, 'c2': C2, 'w': W}
-# dimensions = annModel.count_params()
-# max_bound = 0.5 * np.ones(dimensions)
-# min_bound = - max_bound
-# bounds = (min_bound, max_bound)
+# initialize swarm
+options = {'c1': C1, 'c2': C2, 'w': W}
+dimensions = annModel.count_params()
+max_bound = 3 * np.ones(dimensions)
+min_bound = -2 * np.ones(dimensions)
+bounds = (min_bound, max_bound)
+
+# define objective function for PSO
+def objective_function(x):
+    n_particles = x.shape[0]
+    j = [ann.evaluate_model_pso(x[i]) for i in range(n_particles)]
+    return np.array(j)
 
 
-# # define objective function for PSO
-# def objective_function(x):
-#     n_particles = x.shape[0]
-#     j = [ann.evaluate_model_pso(x[i]) for i in range(n_particles)]
-#     return np.array(j)
+# call instance of PSO
+optimizer = ps.single.GlobalBestPSO(n_particles=PARTICLE, dimensions=dimensions, options=options, bounds=bounds)
 
+# optimize PSO
+cost, pos = optimizer.optimize(objective_function, iters=ITERATION, verbose=1)
 
-# # call instance of PSO
-# optimizer = ps.single.GlobalBestPSO(n_particles=PARTICLE, dimensions=dimensions, options=options, bounds=bounds)
-
-# # optimize PSO
-# cost, pos = optimizer.optimize(objective_function, iters=ITERATION, verbose=1)
-
-# # predict value from baseline model with PSO optimize
-# pso_model = ann.model_pso(pos)
-# history_pso = pso_model.history
-# pso_predict = pso_model.predict(test_X[0].reshape(1, DIM))
+# predict value from baseline model with PSO optimize
+pso_model = ann.model_pso(pos)
+pso_predict = pso_model.predict(test_X)
 
 # # reversed value to original value
 # pso_temps = np.concatenate((test_X[0].reshape(1, DIM), pso_predict), axis=1)
@@ -131,15 +141,15 @@ train_X, train_y, sc, dx ,dy = ann.split_data_scale_transform(data)
 # plt.legend(loc='upper left')
 # plt.show()
 
-# # show close value
-# plt.plot(indicator_data_ann_predict['Close'], label='ANN')
-# plt.plot(indicator_data_pso_predict['Close'], label='PSO')
-# plt.plot(indicator_test_data['Close'], label='REAL VALUE')
-# plt.title('Close')
-# plt.ylabel('Close')
-# plt.xlabel('number of date')
-# plt.legend(loc='upper left')
-# plt.show()
+# show close value
+plt.plot(predict, label='ANN')
+plt.plot(pso_predict, label='PSO')
+plt.plot(test_y, label='REAL VALUE')
+plt.title('Close')
+plt.ylabel('Close')
+plt.xlabel('number of date')
+plt.legend(loc='upper left')
+plt.show()
 
 # # show RSI 14
 # plt.plot(indicator_data_ann_predict['rsi'], label='ANN')
