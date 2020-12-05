@@ -4,7 +4,7 @@ from simulate import Simulator
 
 data = pd.read_csv('data/test_set/FB-18.csv')
 
-simulator = Simulator(10, data, initial_fund=100000)
+simulator = Simulator(simulate_day=10, simulate_data=data, baseline_model=None, pso_model=None)
 simulator.start()
 
 summary = simulator.summary()
