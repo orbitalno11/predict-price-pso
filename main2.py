@@ -11,9 +11,9 @@ from preparation import Preparation
 from ANN import ANN
 
 # initial value
-TRAIN_PATH = 'data/test_set/CSCO-18.csv'
-PATH_ANN_MODEL = 'model/model-baseline/model-cs'
-PATH_PSO_MODEL = 'model/model-pso/model-pso-csco'
+TRAIN_PATH = 'data/test_set/MSFT-18.csv'
+# PATH_ANN_MODEL = 'model/model-baseline/model-cs'
+PATH_PSO_MODEL = 'model/model-pso/model-pso-msft3'
 
 N_IN = 5  # number of date for training
 N_OUT = 1  # number of date for predict
@@ -70,8 +70,8 @@ ann.set_train(train_X, train_y)
 # initialize swarm
 options = {'c1': C1, 'c2': C2, 'w': W}
 dimensions = 151
-max_bound = 3 * np.ones(dimensions)
-min_bound = -2 * np.ones(dimensions)
+max_bound = 5 * np.ones(dimensions)
+min_bound = -5 * np.ones(dimensions)
 bounds = (min_bound, max_bound)
 
 # define objective function for PSO
@@ -133,7 +133,7 @@ cost, pos = optimizer.optimize(objective_function, iters=ITERATION, verbose=1)
 # predict value from baseline model with PSO optimize
 pso_model = evaluate_model_pso_model(pos)
 # pso_predict = pso_model.predict(test_X)
-# pso_model.save(PATH_PSO_MODEL)
+pso_model.save(PATH_PSO_MODEL)
 # # reversed value to original value
 # pso_temps = np.concatenate((test_X[0].reshape(1, DIM), pso_predict), axis=1)
 # pso_reversed = sc.inverse_transform(pso_temps)

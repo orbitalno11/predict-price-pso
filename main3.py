@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 
 from simulate import Simulator
 
-data = pd.read_csv('data/test_set/CSCO-20.csv')
+data = pd.read_csv('data/test_set/MSFT-20.csv')
 
-model1 = keras.models.load_model('model/model-baseline/model-csco')
-model2 = keras.models.load_model('model/model-pso/model-pso-csco')
+model1 = keras.models.load_model('model/model-baseline/model-msft')
+model2 = keras.models.load_model('model/model-pso/model-pso-msft3')
 simulator = Simulator(simulate_day=30, simulate_data=data,
                       baseline_model=model1, pso_model=model2, trading_constant=0.4)
 
