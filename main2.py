@@ -4,23 +4,26 @@ import matplotlib.pyplot as plt
 import pyswarms as ps
 
 # from indicator import Indicator
+from tensorflow.python.keras import Sequential
+from tensorflow.python.keras.layers import Dense
+
 from preparation import Preparation
 from ANN import ANN
 
 # initial value
-TRAIN_PATH = 'data/test_set/C-18.csv'
-PATH_ANN_MODEL = 'model/model-baseline/model-c'
-PATH_PSO_MODEL = 'model/model-pso/model-pso-c'
+TRAIN_PATH = 'data/test_set/CSCO-18.csv'
+PATH_ANN_MODEL = 'model/model-baseline/model-cs'
+PATH_PSO_MODEL = 'model/model-pso/model-pso-csco'
 
 N_IN = 5  # number of date for training
 N_OUT = 1  # number of date for predict
 DIM = N_IN * 6  # dimension for baseline model
 
-PARTICLE = 200  # number of PSO particle
-ITERATION = 10  # number of PSO iteration
-C1 = 2
-C2 = 2
-W = 0.1
+PARTICLE = 100  # number of PSO particle
+ITERATION = 5  # number of PSO iteration
+C1 = 2.5
+C2 = 2.05
+W = 0.7
 
 # setup baseline model
 ann = ANN(epochs=200, batch=3, n_in=N_IN, n_out=N_OUT)
@@ -34,9 +37,9 @@ train_X, train_y, sc = ann.split_data_scale_transform(data)
 ann.set_train(train_X, train_y)
 
 # # training baseline model
-history = ann.baseline_train()
-annModel = ann.get_baseline_model()
-annModel.save(PATH_ANN_MODEL)
+# history = ann.baseline_train()
+# annModel = ann.get_baseline_model()
+# annModel.save(PATH_ANN_MODEL)
 # # summarize history for loss
 # plt.plot(history.history['loss'])
 # plt.plot(history.history['val_loss'])
@@ -59,26 +62,66 @@ annModel.save(PATH_ANN_MODEL)
 
 # # predict value from baseline model
 # predict = annModel.predict(test_X)
-weight = annModel.get_weights()
-for w in weight:
-    print(np.amax(w), np.amin(w))
-    print('-------------------------------')
+# weight = annModel.get_weights()
+# for w in weight:
+#     print(np.amax(w), np.amin(w))
+#     print('-------------------------------')
 
 # initialize swarm
 options = {'c1': C1, 'c2': C2, 'w': W}
-dimensions = annModel.count_params()
+dimensions = 151
 max_bound = 3 * np.ones(dimensions)
 min_bound = -2 * np.ones(dimensions)
 bounds = (min_bound, max_bound)
 
 # define objective function for PSO
+def evaluate_model_pso( w: list):
+    w1 = w[0:25].reshape((5, 5))
+    b1 = w[25:30].reshape((5,))
+    w2 = w[30:80].reshape((5, 10))
+    b2 = w[80:90].reshape((10,))
+    w3 = w[90:140].reshape((10, 5))
+    b3 = w[140:145].reshape((5,))
+    w4 = w[145:150].reshape((5, 1))
+    b4 = w[150:151]
+    weight = [w1, b1, w2, b2, w3, b3, w4, b4]
 
+    pso_model = Sequential()
+    pso_model.add(Dense(5, input_dim=5, activation='relu'))
+    pso_model.add(Dense(5 * 2, activation='relu'))
+    pso_model.add(Dense(5 ,activation='relu'))
+    pso_model.add(Dense(1, activation='linear'))
+    pso_model.set_weights(weight)
+    pso_model.compile(optimizer='adam', loss='mean_squared_error')
+
+    # self.pso_model.fit(self.train['x'], self.train['y'], epochs=0, batch_size=self.batch)
+    evaluate = pso_model.evaluate(train_X, train_y, batch_size=3)
+    return evaluate
 
 def objective_function(x):
     n_particles = x.shape[0]
-    j = [ann.evaluate_model_pso(x[i]) for i in range(n_particles)]
+    j = [evaluate_model_pso(x[i]) for i in range(n_particles)]
     return np.array(j)
 
+def evaluate_model_pso_model( w: list):
+    w1 = w[0:25].reshape((5, 5))
+    b1 = w[25:30].reshape((5,))
+    w2 = w[30:80].reshape((5, 10))
+    b2 = w[80:90].reshape((10,))
+    w3 = w[90:140].reshape((10, 5))
+    b3 = w[140:145].reshape((5,))
+    w4 = w[145:150].reshape((5, 1))
+    b4 = w[150:151]
+    weight = [w1, b1, w2, b2, w3, b3, w4, b4]
+
+    pso_model = Sequential()
+    pso_model.add(Dense(5, input_dim=5, activation='relu'))
+    pso_model.add(Dense(5 * 2, activation='relu'))
+    pso_model.add(Dense(5 ,activation='relu'))
+    pso_model.add(Dense(1, activation='linear'))
+    pso_model.set_weights(weight)
+    pso_model.compile(optimizer='adam', loss='mean_squared_error')
+    return pso_model
 
 # call instance of PSO
 optimizer = ps.single.GlobalBestPSO(
@@ -88,9 +131,9 @@ optimizer = ps.single.GlobalBestPSO(
 cost, pos = optimizer.optimize(objective_function, iters=ITERATION, verbose=1)
 
 # predict value from baseline model with PSO optimize
-pso_model = ann.model_pso(pos)
+pso_model = evaluate_model_pso_model(pos)
 # pso_predict = pso_model.predict(test_X)
-pso_model.save(PATH_PSO_MODEL)
+# pso_model.save(PATH_PSO_MODEL)
 # # reversed value to original value
 # pso_temps = np.concatenate((test_X[0].reshape(1, DIM), pso_predict), axis=1)
 # pso_reversed = sc.inverse_transform(pso_temps)

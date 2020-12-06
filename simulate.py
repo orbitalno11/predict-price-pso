@@ -2,12 +2,7 @@ from pandas import DataFrame
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
-from numpy.random import randn
-
 from preparation import Preparation
-
-
-# import model
 
 
 class Simulator:
@@ -63,7 +58,7 @@ class Simulator:
 
     def __baseline_predict_data(self):
         baseline_predict = self.baseline_model.predict(self.scale_data)
-        temp = np.concatenate((self.preparation_data.iloc[:, :5], baseline_predict), axis=1)
+        temp = np.concatenate((self.scale_data[:, :5], baseline_predict), axis=1)
         reverse_data = self.sc.inverse_transform(temp)
         df = DataFrame(reverse_data, columns=[
             'Open', 'High', 'Low', 'Close', 'Volume', 'baseline_predict'])
@@ -71,7 +66,7 @@ class Simulator:
 
     def __pso_predict_data(self):
         pso_predict = self.pso_model.predict(self.scale_data)
-        temp = np.concatenate((self.preparation_data.iloc[:, :5], pso_predict), axis=1)
+        temp = np.concatenate((self.scale_data[:, :5], pso_predict), axis=1)
         reverse_data = self.sc.inverse_transform(temp)
         df = DataFrame(reverse_data, columns=[
             'Open', 'High', 'Low', 'Close', 'Volume', 'pso_predict_data'])
