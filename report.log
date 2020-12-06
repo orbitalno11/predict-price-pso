@@ -13905,3 +13905,4 @@ This property should not be used in TensorFlow 2.0, as updates are applied autom
   7.67479890e-01 -2.23005457e-02 -3.06396346e-01 -6.35246115e-01
  -8.86898907e-01  3.54808732e-01 -1.83126078e-01]
 2020-12-06 18:31:35,147 - tensorflow - INFO - Assets written to: model/model-pso/model-pso-msft3\assets
+2020-12-06 19:45:17,094 - pyswarms.single.global_best - INFO - Optimize for 5 iters with {'c1': 2.5, 'c2': 2.05, 'w': 0.7}

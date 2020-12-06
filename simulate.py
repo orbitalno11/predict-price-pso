@@ -64,7 +64,7 @@ class Simulator:
 
     def __buy_hold(self, close):
         value = (self.buy_hold_stock * close) * (1 - self.TRADING_FEE)
-        buy_hold = ((value - self.first_day_fund) / self.first_day_fund)*100
+        buy_hold = np.round(((value - self.first_day_fund) / self.first_day_fund)*100, 3)
         self.buy_hold_history.append(buy_hold)
 
     def __baseline_predict_data(self):
@@ -222,10 +222,12 @@ class Simulator:
                      'close', 'real_fund', 'baseline_fund', 'pso_fund',
                      'real_stock', 'baseline_stock', 'pso_stock',
                      'real_action', 'baseline_action', 'pso_action', 'buy_hold'])
-        df['real_value_change'] = (
-            (df.real_fund - self.first_day_fund) / self.first_day_fund) * 100
-        df['baseline_value_change'] = (
-            (df.baseline_fund - self.first_day_fund) / self.first_day_fund) * 100
-        df['pso_value_change'] = (
-            (df.pso_fund - self.first_day_fund) / self.first_day_fund) * 100
+        df['real_value_change'] = np.round((
+            (df.real_fund - self.first_day_fund) / self.first_day_fund) * 100, 3)
+        df['baseline_value_change'] = np.round((
+            (df.baseline_fund - self.first_day_fund) / self.first_day_fund) * 100, 3)
+        df['pso_value_change'] = np.round((
+            (df.pso_fund - self.first_day_fund) / self.first_day_fund) * 100, 3)
+        df['surplus_baseline'] = df['baseline_value_change'] - df['buy_hold']
+        df['surplus_pso'] = df['pso_value_change'] - df['buy_hold']
         return df
