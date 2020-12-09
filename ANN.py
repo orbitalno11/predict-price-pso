@@ -130,29 +130,16 @@ class ANN:
         self.pso_model.compile(optimizer='adam', loss='mean_squared_error')
 
     def evaluate_model_pso(self, w: list):
-        # w1 = w[0:25].reshape((5, 5))
-        # b1 = w[25:30].reshape((5,))
-        # w2 = w[30:80].reshape((5, 10))
-        # b2 = w[80:90].reshape((10,))
-        # w3 = w[90:140].reshape((10, 5))
-        # b3 = w[140:145].reshape((5,))
-        # w4 = w[145:150].reshape((5, 1))
-        # b4 = w[150:151]
-        # weight = [w1, b1, w2, b2, w3, b3, w4, b4]
-
-        # pso_model = Sequential()
-        # pso_model.add(Dense(self.dim, input_dim=self.dim, activation='relu'))
-        # pso_model.add(Dense(self.dim * 2, activation='relu'))
-        # pso_model.add(Dense(self.dim, activation='relu'))
-        # pso_model.add(Dense(self.n_out, activation='linear'))
-        # pso_model.set_weights(weight)
-        # pso_model.compile(optimizer='adam', loss='mean_squared_error')
-
         self.initial_model_pso(w)
         # self.pso_model.fit(self.train['x'], self.train['y'], epochs=0, batch_size=self.batch)
         evaluate = self.pso_model.evaluate(
             self.train['x'], self.train['y'], batch_size=self.batch)
         return evaluate
+
+    def objective_function(self, x):
+        n_particles = x.shape[0]
+        loss = [self.evaluate_model_pso(x[i]) for i in range(n_particles)]
+        return np.array(loss)
 
     def model_pso(self, w: list):
         self.initial_model_pso(w)
