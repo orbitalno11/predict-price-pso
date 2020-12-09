@@ -7,11 +7,11 @@ from simulate import Simulator
 
 N_DAY = 30
 
-data = pd.read_csv('data/test_set/V-20.csv')
+data = pd.read_csv('data/test_set/DIS-20.csv')
 # data = pd.read_csv('data/FB.csv')
 
-model1 = keras.models.load_model('model/model-baseline/model-pg')
-model2 = keras.models.load_model('model/model-pso/model-pso-pg')
+model1 = keras.models.load_model('model/model-baseline/model-dis')
+model2 = keras.models.load_model('model/model-pso/model-pso-dis')
 simulator = Simulator(simulate_day=N_DAY, simulate_data=data,
                       baseline_model=model1, pso_model=model2)
 
@@ -40,21 +40,21 @@ print('30-day')
 for index in range(0, day30.columns.shape[0]):
     print('{} : {}'.format(day30.columns[index], day30.iloc[0, index]))
 
-# plt.plot(plot_data['change'], label='real')
-# plt.plot(summary['baseline_predict'], label='baseline')
-# plt.plot(summary['pso_predict'], label='pso')
-# plt.title('Percent change')
-# plt.ylabel('percent')
-# plt.xlabel('number of date')
-# plt.legend(loc='upper right')
-# plt.show()
+plt.plot(plot_data['change'], label='real')
+plt.plot(summary['baseline_predict'], label='baseline')
+plt.plot(summary['pso_predict'], label='pso')
+plt.title('Percent change')
+plt.ylabel('percent')
+plt.xlabel('number of day')
+plt.legend(loc='upper right')
+plt.show()
 
-# plt.plot(summary['real_value_change'], label='real value')
-# plt.plot(summary['baseline_value_change'], label='baseline')
-# plt.plot(summary['pso_value_change'], label='pso')
-# plt.plot(summary['buy_hold'], label='b&h')
-# plt.title('2020')
-# plt.ylabel('change')
-# plt.xlabel('number of date')
-# plt.legend(loc='upper right')
-# plt.show()
+plt.plot(summary['real_value_change'], label='real value')
+plt.plot(summary['baseline_value_change'], label='baseline')
+plt.plot(summary['pso_value_change'], label='pso')
+plt.plot(summary['buy_hold'], label='b&h')
+plt.title('2020')
+plt.ylabel('change')
+plt.xlabel('number of day')
+plt.legend(loc='upper right')
+plt.show()

@@ -13906,3 +13906,23 @@ This property should not be used in TensorFlow 2.0, as updates are applied autom
  -8.86898907e-01  3.54808732e-01 -1.83126078e-01]
 2020-12-06 18:31:35,147 - tensorflow - INFO - Assets written to: model/model-pso/model-pso-msft3\assets
 2020-12-06 19:45:17,094 - pyswarms.single.global_best - INFO - Optimize for 5 iters with {'c1': 2.5, 'c2': 2.05, 'w': 0.7}
+2020-12-09 15:40:40,235 - pyswarms.single.global_best - INFO - Optimize for 5 iters with {'c1': 2.5, 'c2': 2.05, 'w': 0.7}
+2020-12-09 15:41:13,699 - pyswarms.single.global_best - INFO - Optimize for 5 iters with {'c1': 2.5, 'c2': 2.05, 'w': 0.7}
+2020-12-09 15:42:34,054 - pyswarms.single.global_best - INFO - Optimize for 5 iters with {'c1': 2.5, 'c2': 2.05, 'w': 0.7}
+2020-12-09 15:45:51,654 - pyswarms.single.global_best - INFO - Optimize for 5 iters with {'c1': 2.5, 'c2': 2.05, 'w': 0.7}
+2020-12-09 15:46:17,503 - pyswarms.single.global_best - INFO - Optimize for 5 iters with {'c1': 2.5, 'c2': 2.05, 'w': 0.7}
+2020-12-09 15:46:18,413 - tensorflow - WARNING - Callbacks method `on_test_batch_end` is slow compared to the batch time (batch time: 0.0000s vs `on_test_batch_end` time: 0.0010s). Check your callbacks.
+2020-12-09 15:46:18,439 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 56351.265625, best pos: [-9.6108813  -5.76370471 -0.96004595 -3.98649926  2.99209414  1.99259663
+  1.71217802  8.32944675 -7.46940646  4.3401981   6.78823296  7.80846651
+ -4.74571342  5.89930886 -3.40273398 -2.47204162 -3.80415011 -6.68760141
+ -1.60115161 -1.65896752 -1.50888477 -9.10782771 -1.57358947  5.56679067
+ -1.02795116 -0.36950942  1.637624    9.47214459 -8.42853304 -5.20825709
+ -4.24647491 -5.35299042  3.95166512  4.10338896  4.05471938 -0.86223645
+  3.48311725  6.66316453 -7.80189785 -1.8741858  -3.61799308  6.96978538
+  9.62144105 -5.13625024 -3.71844638  3.07349518  5.45394096 -2.05690311
+ -0.31921188  4.82646279 -7.83280972  2.57959998 -9.11566659  2.70492392
+  5.34895797  0.05949809  3.80124765  2.41221114 -3.38014321  5.21783307
+ -2.83650844]
+2020-12-09 15:47:01,021 - pyswarms.single.global_best - INFO - Optimize for 5 iters with {'c1': 2.5, 'c2': 2.05, 'w': 0.7}
+2020-12-09 15:48:23,860 - pyswarms.single.global_best - INFO - Optimize for 5 iters with {'c1': 2.5, 'c2': 2.05, 'w': 0.7}
+2020-12-09 15:48:55,438 - pyswarms.single.global_best - INFO - Optimize for 5 iters with {'c1': 2.5, 'c2': 2.05, 'w': 0.7}
