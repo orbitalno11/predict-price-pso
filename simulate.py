@@ -49,14 +49,13 @@ class Simulator:
         self.close_history = [np.nan]
 
     def __prepare_data(self):
-        preparation = Preparation(self.simulate_data)
-        preparation_data = preparation.calculate_per_change()
+        n_trian_precent = 0.8
+        split = int(self.simulate_data.shape[0] * n_trian_precent)
+        preparation_data = self.simulate_data.iloc[split:, :]
+        preparation_data.reset_index(drop=True, inplace=True)
         sc = MinMaxScaler(feature_range=(0, 1))
         scale_data = sc.fit_transform(preparation_data)
-        n_trian_precent = 0.8
-        split = int(scale_data.shape[0] * n_trian_precent)
-        data_trian, data_test = scale_data[:split, :], scale_data[split:, :]
-        scale_data = data_test[:, :5]
+        scale_data = scale_data[:, :4]
         first_day_close = preparation_data.loc[0:0, ['Close']].values[0][0]
         limit = int(np.round(self.first_day_fund /
                              first_day_close) / 100) * 100
@@ -71,20 +70,22 @@ class Simulator:
         self.buy_hold_history.append(buy_hold)
 
     def __baseline_predict_data(self):
-        baseline_predict = self.baseline_model.predict(self.scale_data)
+        predict_data = self.scale_data[:, 1:]
+        baseline_predict = self.baseline_model.predict(predict_data)
         temp = np.concatenate(
-            (self.scale_data[:, :5], baseline_predict), axis=1)
+            (self.scale_data, baseline_predict), axis=1)
         reverse_data = self.sc.inverse_transform(temp)
         df = DataFrame(reverse_data, columns=[
-            'Open', 'High', 'Low', 'Close', 'Volume', 'baseline_predict'])
+            'Close', 'rsi', 'Histogram', 'change_of_ema', 'baseline_predict'])
         self.baseline_predict_data = df.copy()
 
     def __pso_predict_data(self):
-        pso_predict = self.pso_model.predict(self.scale_data)
-        temp = np.concatenate((self.scale_data[:, :5], pso_predict), axis=1)
+        predict_data = self.scale_data[:, 1:]
+        pso_predict = self.pso_model.predict(predict_data)
+        temp = np.concatenate((self.scale_data, pso_predict), axis=1)
         reverse_data = self.sc.inverse_transform(temp)
         df = DataFrame(reverse_data, columns=[
-            'Open', 'High', 'Low', 'Close', 'Volume', 'pso_predict_data'])
+            'Close', 'rsi', 'Histogram', 'change_of_ema', 'pso_predict_data'])
         self.pso_predict_data = df.copy()
 
     def __trading(self, day: int):
@@ -211,9 +212,9 @@ class Simulator:
         self.__baseline_predict_data()
         if self.pso_model is not None:
             self.__pso_predict_data()
+
         for day in range(self.simulate_day):
             self.__trading(day)
-        return 'start'
 
     def summary(self):
         df = DataFrame(list(
