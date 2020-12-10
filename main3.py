@@ -4,15 +4,24 @@ from tensorflow import keras
 import matplotlib.pyplot as plt
 
 from simulate import Simulator
-
+from indicator import Indicator
 N_DAY = 30
 
-data = pd.read_csv('data/test_set/DIS-20.csv')
-# data = pd.read_csv('data/FB.csv')
+data = pd.read_csv('data/test_set/C-18.csv')
 
-model1 = keras.models.load_model('model/model-baseline/model-dis')
-model2 = keras.models.load_model('model/model-pso/model-pso-dis')
-simulator = Simulator(simulate_day=N_DAY, simulate_data=data,
+# create indicator
+indicator = Indicator(data)
+indicator_data = indicator.RSI()
+indicator_data = indicator.EMA()
+indicator_data = indicator.MACD()
+indicator_data.dropna(inplace=True)
+indicator_data['Change of EMA'] = (
+        (indicator_data['Close'] - indicator_data['ema_5_day']) / indicator_data['ema_5_day']) * 100
+data_set = indicator_data[['Close','rsi', 'Histogram', 'Change of EMA', 'change']]
+
+model1 = keras.models.load_model('model/model-baseline-new/model-c18')
+model2 = keras.models.load_model('model/model-pso-new/model-pso-c18')
+simulator = Simulator(simulate_day=N_DAY, simulate_data=data_set,
                       baseline_model=model1, pso_model=model2)
 
 simulator.start()
