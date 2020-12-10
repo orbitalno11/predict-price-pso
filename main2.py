@@ -12,10 +12,10 @@ os.environ['CUDA_VISIBLE_DEVICE'] = '-1'
 list_path = ['c','csco','cvx','dis','dis','fb','ko','mmm','msft','pfe','pg','v','wmt']
 for i in list_path:
     # initial value
-    TRAIN_PATH = 'data/test_set/'+i.upper()+'-18.csv'
+    TRAIN_PATH = 'data/test_set/'+i.upper()+'-20.csv'
     # PATH_ANN_MODEL = 'model/model-baseline-new/model-'+i+'18'
 
-    PATH_PSO_MODEL = 'model/model-pso-new/model-pso-'+i+'18'
+    PATH_PSO_MODEL = 'model/model-pso-new/model-pso-'+i+'20'
 
     N_IN = 5  # number of date for training
     N_OUT = 1  # number of date for predict
@@ -77,7 +77,7 @@ for i in list_path:
 
     # optimize PSO
     cost, pos = optimizer.optimize(
-        ann.evaluate_model_pso, iters=ITERATION, verbose=1)
+        ann.objective_function, iters=ITERATION, verbose=1)
 
     # predict value from baseline model with PSO optimize
     pso_model = ann.model_pso(pos)

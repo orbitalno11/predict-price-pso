@@ -1,8 +1,8 @@
+import time
+
 from pandas import DataFrame
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-
-from preparation import Preparation
 
 
 class Simulator:
@@ -208,13 +208,19 @@ class Simulator:
             self.__set_pso_data(fund=fund, stock=stock, action=action)
 
     def start(self):
+        print("starting simulation")
         self.__prepare_data()
         self.__baseline_predict_data()
         if self.pso_model is not None:
             self.__pso_predict_data()
 
+        animation = "|/-\\"
+        idx = 0
         for day in range(self.simulate_day):
             self.__trading(day)
+            print('Processing...' + animation[idx % len(animation)], end="\r")
+            idx += 1
+            time.sleep(0.1)
 
     def summary(self):
         df = DataFrame(list(

@@ -1,4 +1,6 @@
 import os
+import time
+
 import pandas as pd
 from tensorflow import keras
 import matplotlib.pyplot as plt
@@ -22,6 +24,8 @@ for name in list_path:
     ann = keras.models.load_model(BASELINE_MODEL_PATH)
     pso = keras.models.load_model(PSO_MODEL_PATH)
 
+    # iteration
+    print('starting for {}'.format(name.split('.')[0]))
     # create indicator
     indicator = Indicator(data)
     indicator_data = indicator.RSI()
