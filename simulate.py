@@ -53,7 +53,10 @@ class Simulator:
         preparation_data = preparation.calculate_per_change()
         sc = MinMaxScaler(feature_range=(0, 1))
         scale_data = sc.fit_transform(preparation_data)
-        scale_data = scale_data[:, :5]
+        n_trian_precent = 0.8
+        split = int(scale_data.shape[0] * n_trian_precent)
+        data_trian, data_test = scale_data[:split, :], scale_data[split:, :]
+        scale_data = data_test[:, :5]
         first_day_close = preparation_data.loc[0:0, ['Close']].values[0][0]
         limit = int(np.round(self.first_day_fund /
                              first_day_close) / 100) * 100
