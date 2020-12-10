@@ -18,11 +18,11 @@ for i in list_path:
     N_IN = 5  # number of date for training
     N_OUT = 1  # number of date for predict
 
-    PARTICLE = 400  # number of PSO particle
-    ITERATION = 10  # number of PSO iteration
-    C1 = 2.5
-    C2 = 2.05
-    W = 0.0001
+    PARTICLE = 150  # number of PSO particle
+    ITERATION = 7  # number of PSO iteration
+    C1 = 2.985
+    C2 = 1.066
+    W = 0.000482
 
     # setup baseline model
     ann = ANN(epochs=50, batch=13, n_in=N_IN, n_out=N_OUT)
