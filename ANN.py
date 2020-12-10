@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-from keras.models import Sequential
-from keras.layers import Dense
-
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+import  os
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
 class ANN:
 
