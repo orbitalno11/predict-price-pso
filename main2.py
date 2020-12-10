@@ -18,11 +18,11 @@ for i in list_path:
     N_IN = 5  # number of date for training
     N_OUT = 1  # number of date for predict
 
-    PARTICLE = 100  # number of PSO particle
-    ITERATION = 5  # number of PSO iteration
+    PARTICLE = 400  # number of PSO particle
+    ITERATION = 10  # number of PSO iteration
     C1 = 2.5
     C2 = 2.05
-    W = 0.7
+    W = 0.0001
 
     # setup baseline model
     ann = ANN(epochs=50, batch=13, n_in=N_IN, n_out=N_OUT)
@@ -64,8 +64,8 @@ for i in list_path:
     # initialize swarm
     options = {'c1': C1, 'c2': C2, 'w': W}
     dimensions = 61
-    max_bound = 10 * np.ones(dimensions)
-    min_bound = -10 * np.ones(dimensions)
+    max_bound = 1.5 * np.ones(dimensions)
+    min_bound = -1.5 * np.ones(dimensions)
     bounds = (min_bound, max_bound)
 
     # define objective function for PSO
