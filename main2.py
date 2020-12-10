@@ -6,13 +6,11 @@ import pyswarms as ps
 from preparation import Preparation
 from ANN import ANN
 from indicator import Indicator
-import  os
-os.environ['CUDA_VISIBLE_DEVICE'] = '-1'
 
 list_path = ['c','csco','cvx','dis','dis','fb','ko','mmm','msft','pfe','pg','v','wmt']
 for i in list_path:
     # initial value
-    TRAIN_PATH = 'data/test_set/'+i.upper()+'-20.csv'
+    TRAIN_PATH = 'input/'+i.upper()+'-20.csv'
     # PATH_ANN_MODEL = 'model/model-baseline-new/model-'+i+'18'
 
     PATH_PSO_MODEL = 'model/model-pso-new/model-pso-'+i+'20'

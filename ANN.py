@@ -4,7 +4,7 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 import  os
-os.environ["CUDA_VISIBLE_DEVICES"]="-1"
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 class ANN:
 
