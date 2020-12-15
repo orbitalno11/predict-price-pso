@@ -138,6 +138,13 @@ class Simulator:
         else:
             return self.__hold(fund=fund, stock=stock)
 
+    def __sell_all(self, close, fund, stock):
+        value = (stock * close) * (1 - self.TRADING_FEE)
+        ret_fund = fund + value
+        ret_stock = stock - stock
+        ret_action = "sell_all"
+        return ret_fund, ret_stock, ret_action
+
     def __hold(self, fund, stock):
         return fund, stock, "hold"
 

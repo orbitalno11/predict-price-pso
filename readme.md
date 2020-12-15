@@ -15,3 +15,23 @@ The aim of this project is to compare ability of stock forecasting between simpl
 ## Related work
 
  - pyswarms Library ([see detail here)](https://pyswarms.readthedocs.io/en/latest/)
+
+## How to run this project
+- create conda environment.
+ ```
+conda create -n myenv python=3.7
+```
+- activate your environment
+```
+conda activate myenv
+```
+- using pip to install require library
+```
+pip install -r requirements.txt
+```
+- running simulator (default simulate day is 30)
+
+`If you run the simulator in terminal you have to close the window that show the result graph for simulator next stock.`
+```
+python run_simulator.py``
+```
