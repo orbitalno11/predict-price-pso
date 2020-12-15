@@ -33,5 +33,5 @@ pip install -r requirements.txt
 
 `If you run the simulator in terminal you have to close the window that show the result graph for simulator next stock.`
 ```
-python run_simulator.py``
+python run_simulator.py
 ```
